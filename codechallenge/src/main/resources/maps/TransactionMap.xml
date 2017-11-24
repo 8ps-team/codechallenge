@@ -1,0 +1,30 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Transaction">
+	<insert id="insert" parameterType="Transaction">
+		INSERT INTO transaction(id, content, supplierid, transactiondate) VALUES(#{id_text}, #{content}, #{supplierId}, #{currentDate});
+	</insert>
+	
+	<select id="getAll" resultMap="transactionResult">
+		SELECT t.*, s.name as suppliername FROM transaction t LEFT JOIN supplier s ON s.id = t.supplierid ORDER BY t.transactiondate;
+	</select>
+	
+	<select id="search" resultMap="transactionResult">
+		SELECT t.*, s.name as suppliername FROM transaction t LEFT JOIN supplier s ON s.id = t.supplierid
+		WHERE s.name LIKE #{search} OR t.content LIKE #{search} OR t.id LIKE #{search} OR t.supplierid LIKE #{search} 
+			OR DATE_FORMAT(t.transactiondate, '%d/%m/%Y %H:%i:%s') LIKE #{search}
+			OR DATE_FORMAT(t.transactiondate, '%d/%M/%Y %H:%i:%s') LIKE #{search}
+			OR DATE_FORMAT(t.transactiondate, '%d-%m-%Y %H:%i:%s') LIKE #{search}
+			OR DATE_FORMAT(t.transactiondate, '%d-%M-%Y %H:%i:%s') LIKE #{search}
+			OR DATE_FORMAT(t.transactiondate, '%d %m %Y %H %i %s') LIKE #{search}
+			OR DATE_FORMAT(t.transactiondate, '%d %M %Y %H %i %s') LIKE #{search};
+	</select>
+	
+	<resultMap id="transactionResult" type="Transaction">
+		<result property="id_text" column="id" />
+		<result property="content" column="content" />
+		<result property="supplierId" column="supplierid" />
+		<result property="currentDate" column="transactiondate" />
+		<result property="supplierName" column="suppliername" />
+	</resultMap>
+</mapper>
